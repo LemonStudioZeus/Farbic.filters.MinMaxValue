@@ -1,2 +1,2 @@
-# Farbic.filters.MinMaxValue
-Farbic.filters.MinMaxValue
+# fabric.Image.filters.MinMaxvalue
+fabric.Image.filters.MinMaxvalue
