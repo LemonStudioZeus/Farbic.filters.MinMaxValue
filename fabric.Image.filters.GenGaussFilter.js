@@ -67,7 +67,8 @@
          */
         applyTo2d: function(options) {
             var imageData = options.imageData;
-            var imageData2 = imageData.slice(0);
+            //var pixels2 = imageData.data.slice(0);
+            var imageData2 = new ImageData(new Uint8ClampedArray(imageData.data), imageData.width, imageData.height)
             var w = imageData.width;
             var h = imageData.height;
 
@@ -122,24 +123,30 @@
 
 
             function GenGauss() {
-                if (blurAlphaChannel)
-                    stackBlurCanvasRGBA(imageData.data, 0, 0, w, h, radius1);
-                else
-                    stackBlurCanvasRGB(imageData.data, 0, 0, w, h, radius1);
 
                 if (blurAlphaChannel)
-                    stackBlurCanvasRGBA(imageData2.data, 0, 0, w, h, radius2);
+                    stackBlurCanvasRGBA(imageData, 0, 0, w, h, radius1);
                 else
-                    stackBlurCanvasRGB(imageData2.data, 0, 0, w, h, radius2);
+                    stackBlurCanvasRGB(imageData, 0, 0, w, h, radius1);
 
 
-                subImage(imageData.data, imageData2.data, 0, 0, w, h);
+                if (blurAlphaChannel)
+                    stackBlurCanvasRGBA(imageData2, 0, 0, w, h, radius2);
+                else
+                    stackBlurCanvasRGB(imageData2, 0, 0, w, h, radius2);
+
+
+
+                subImage(imageData, imageData2);
             }
 
-            function subImage(pixels1, pixels2, width, height) {
+            function subImage(imageData1, imageData2) {
+                console.log('subImage');
+                var pixels1 = imageData1.data;
+                var pixels2 = imageData2.data;
                 var i, j, index,
-                    iLen = width,
-                    jLen = height;
+                    iLen = imageData1.height,
+                    jLen = imageData1.width;
                 for (i = 0; i < iLen; i++) {
                     for (j = 0; j < jLen; j++) {
                         index = (i * 4) * jLen + (j * 4);
@@ -161,12 +168,12 @@
             }
 
 
-            function stackBlurCanvasRGBA(pixels, top_x, top_y, width, height, radius) {
+            function stackBlurCanvasRGBA(imageData, top_x, top_y, width, height, radius) {
                 if (isNaN(radius) || radius < 1) return;
                 radius |= 0;
 
 
-                //var pixels = imageData.data;
+                var pixels = imageData.data;
 
                 var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum, a_sum,
                     r_out_sum, g_out_sum, b_out_sum, a_out_sum,
@@ -389,11 +396,11 @@
             }
 
 
-            function stackBlurCanvasRGB(pixels, top_x, top_y, width, height, radius) {
+            function stackBlurCanvasRGB(imageData, top_x, top_y, width, height, radius) {
                 if (isNaN(radius) || radius < 1) return;
                 radius |= 0;
 
-                //var pixels = imageData.data;
+                var pixels = imageData.data;
 
                 var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum,
                     r_out_sum, g_out_sum, b_out_sum,
